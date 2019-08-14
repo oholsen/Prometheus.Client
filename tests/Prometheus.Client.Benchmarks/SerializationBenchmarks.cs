@@ -1,10 +1,12 @@
 using System.IO;
+using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Prometheus.Client.Collectors;
 
 namespace Prometheus.Client.Benchmarks
 {
     [MemoryDiagnoser]
+    [CoreJob]
     public class SerializationBenchmarks
     {
         // Metric -> Variant -> Label values
@@ -77,12 +79,9 @@ namespace Prometheus.Client.Benchmarks
         }
 
         [Benchmark]
-        public void CollectAndSerialize()
+        public async Task CollectAndSerialize()
         {
-            using (var stream = Stream.Null)
-            {
-                ScrapeHandler.ProcessAsync(_registry, stream).GetAwaiter().GetResult();
-            }
+            await ScrapeHandler.ProcessAsync(_registry, Stream.Null);
         }
     }
 }
